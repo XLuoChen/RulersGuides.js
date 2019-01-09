@@ -4,9 +4,19 @@ body.demo {
 }
 
 .main-wrapper {
-    width: 900px;
+    overflow: scroll;
     margin: 0 auto;
-    color: #555
+    color: #555;
+    z-index: 200;
+    position: absolute;
+    top: 32px;
+    left: 40px;
+    right: 0;
+    bottom: 0;
+}
+
+.rg-overlay {
+    z-index: 50;
 }
 
 em {
