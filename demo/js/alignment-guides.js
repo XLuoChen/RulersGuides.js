@@ -26,11 +26,40 @@ function handle () {
         localStorage['alignmentGuidesDebug'] = this.checked;
     });
 
+    const scrollElement = $('.main-wrapper');
+    let previousX = 0;
+    let previousY = 0;
+
+    scrollElement.scroll(function () {
+        const currentX = scrollElement.scrollLeft();
+        const currentY = scrollElement.scrollTop();
+        const horizontalMoveDistance = currentX - previousX;
+        const verticalMoveDistance = currentY - previousY;
+        scrollRulerWithSameDistance(horizontalMoveDistance, verticalMoveDistance);
+        previousX = scrollElement.scrollLeft();
+        previousY = scrollElement.scrollTop();
+    });
+
     if (localStorage['alignmentGuidesDebug']) {
         var shouldDebug = JSON.parse(localStorage['alignmentGuidesDebug']);
         $('#debug').attr('checked', shouldDebug);
         if (shouldDebug)
             $('html').addClass('debug');
+    }
+
+    /*
+      Scroll ruler when window scrolled
+      =========
+    */
+
+    function scrollRulerWithSameDistance(horizontalMoveDistance, verticalMoveDistance) {
+        if (horizontalMoveDistance !== 0) {
+            $('.ruler.h').animate({left: 0 - scrollElement.scrollLeft()}, 30)
+        }
+
+        if (verticalMoveDistance !== 0) {
+            $('.ruler.v').animate({top: 0 - scrollElement.scrollTop()}, 30)
+        }
     }
 
     /*
