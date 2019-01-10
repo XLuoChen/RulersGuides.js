@@ -1,5 +1,5 @@
 // Array Remove one occurence of the given entry
-function handle () {
+function handle() {
     Array.prototype.removeEntry = function (entry) {
         var index = this.indexOf(entry);
         if (index !== -1) this.remove(index);
@@ -54,12 +54,17 @@ function handle () {
 
     function scrollRulerWithSameDistance(horizontalMoveDistance, verticalMoveDistance) {
         if (horizontalMoveDistance !== 0) {
-            $('.ruler.h').animate({left: 0 - scrollElement.scrollLeft()}, 30)
+            $('.ruler.h').animate({left: 0 - scrollElement.scrollLeft()}, 0)
         }
 
         if (verticalMoveDistance !== 0) {
-            $('.ruler.v').animate({top: 0 - scrollElement.scrollTop()}, 30)
+            $('.ruler.v').animate({top: 0 - scrollElement.scrollTop()}, 0)
         }
+    }
+
+    function transformCordinationWithScrollDistance(direction, originalPosition, offset) {
+        const scrollDistance = direction === 'x' ? scrollElement.scrollLeft() : scrollElement.scrollTop();
+        return originalPosition - offset + scrollDistance;
     }
 
     /*
@@ -271,8 +276,8 @@ function handle () {
 
     Box.prototype = {
         start: function (event) {
-            this.x = this.startX = event.pageX - this.parent.offset.left;
-            this.y = this.startY = event.pageY - this.parent.offset.top;
+            this.x = this.startX = transformCordinationWithScrollDistance('x', event.pageX, this.parent.offset.left);
+            this.y = this.startY = transformCordinationWithScrollDistance('y', event.pageY, this.parent.offset.top);
 
             this.parent.element.append(this.element);
 
@@ -280,8 +285,8 @@ function handle () {
             this.resize(event);
         },
         resize: function (event) {
-            var mouseX = event.pageX - this.parent.offset.left;
-            var mouseY = event.pageY - this.parent.offset.top;
+            var mouseX = transformCordinationWithScrollDistance('x', event.pageX, this.parent.offset.left);
+            var mouseY = transformCordinationWithScrollDistance('y', event.pageY, this.parent.offset.top);
 
             this.width = Math.abs(mouseX - this.startX);
             this.height = Math.abs(mouseY - this.startY);
@@ -347,8 +352,8 @@ function handle () {
             this.mouseOffsetX = event.pageX - this.element.offset().left;
             this.mouseOffsetY = event.pageY - this.element.offset().top;
 
-            this.startX = this.x + this.mouseOffsetX;
-            this.startY = this.y + this.mouseOffsetY;
+            this.startX = transformCordinationWithScrollDistance('x', this.x, 0) + this.mouseOffsetX;
+            this.startY = transformCordinationWithScrollDistance('y', this.y, 0) + this.mouseOffsetY;
 
             $(document).bind('mousemove', this.drag.bind(this));
             $(document).bind('mousemove', this.drag.bind(this));
@@ -362,8 +367,8 @@ function handle () {
             this.drag(event);
         },
         drag: function (event) {
-            this.x = event.pageX - this.parent.offset.left - this.mouseOffsetX;
-            this.y = event.pageY - this.parent.offset.top - this.mouseOffsetY;
+            this.x = transformCordinationWithScrollDistance('x', event.pageX, this.parent.offset.left) - this.mouseOffsetX;
+            this.y = transformCordinationWithScrollDistance('y', event.pageY, this.parent.offset.top) - this.mouseOffsetY;
 
             // lock one axis
             if (event.shiftKey) {
